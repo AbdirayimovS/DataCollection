@@ -27,9 +27,9 @@ finally:
 
 class TobiiEyeTracker(QtCore.QThread):
 
-    def __init__(self, file_path: str):
+    def __init__(self, filename: str):
         super().__init__()
-        self.filename = file_path
+        self.filename = filename
         self.running = False
         self.is_subscribed = False
         self.data_buffer = []
