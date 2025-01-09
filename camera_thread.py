@@ -25,35 +25,37 @@ class CameraRecorder(QThread):
         self.cap = cv2.VideoCapture(0)  #pylint: disable=E1101
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)  #pylint: disable=E1101
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)  #pylint: disable=E1101
-
         fourcc = cv2.VideoWriter_fourcc(*"XVID")
         fps = 30.0
         width, height = (
             int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
             int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)),
             )
-        self.writer = cv2.VideoWriter(f"{filename}.mp4", fourcc, fps, (width, height))
+        self.writer = cv2.VideoWriter(f"{self.filename}.mp4", fourcc, fps, (width, height))
 
     def run(self):
         """Main loop for saving frames."""
         timestamps = []
+        frames = []
         while True:
             if QThread.currentThread().isInterruptionRequested():
                 break
 
             ret, frame = self.cap.read()
+            ts = time.monotonic()
 
-            if not ret:
-                break
-
-            self.writer.write(frame)
-            ts = time.time()
+            frames.append(frame)
             timestamps.append(ts)
 
         self.cap.release()
+        
+        for frame in frames:
+            self.writer.write(frame)
+        
         self.writer.release()
 
         # Save the timestamps to a file
         with open(f"{self.filename}.txt", "w") as f:
             for ts in timestamps:
                 f.write(f"{ts}\n")
+        print("CameraRecorder finished own job!")
