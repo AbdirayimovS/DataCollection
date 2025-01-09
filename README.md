@@ -1,6 +1,10 @@
 # ChaGaze Data Collection
 
+## Setup
 
+```bash
+python main.py </Users/user/path/folder_name> 
+```
 
 Do Tobii calibraiton!
 
