@@ -65,8 +65,7 @@ class TobiiEyeTracker(QtCore.QThread):
 
     def on_gaze_data(self, gaze: Dict):
         """Callback for receiving real-time gaze data."""
-        # gaze 
-        # dictionary save it whole
+        gaze['timestamp'] = time.monotonic()
 
         self.data_buffer.append(gaze)
         if len(self.data_buffer) >= 100:
