@@ -2,6 +2,8 @@
 Scene to display a view and record webcamera and tobii tracker results.
 '''
 import sys
+import argparse
+import os
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 
@@ -16,11 +18,11 @@ class MainWindow(QtWidgets.QWidget):
     Program auto close after 36 seconds.
     I need to add timer
     '''
-    def __init__(self, screen: QtWidgets.QWidget):
+    def __init__(self, screen: QtWidgets.QWidget, filename):
         super().__init__()
         self.child_screen = screen
-        self.recorder = CameraRecorder(filename="mock_person1")
-        self.tobii_worker = TobiiEyeTracker(file_path="mock_person1")
+        self.recorder = CameraRecorder(filename+"/webcam")
+        self.tobii_worker = TobiiEyeTracker(filename+"/tobii")
         self.running = False
         self._init_ui()
 
@@ -147,6 +149,14 @@ class ScenarioScreen(QtWidgets.QWidget):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('filename', help="Path to the file")
+
+    args = parser.parse_args()
+
+    os.path.dirname(args.filename)
+    os.makedirs(args.filename)
+
     app = QtWidgets.QApplication(sys.argv)
     primary_screen = app.primaryScreen()
     screens = app.screens()
@@ -155,7 +165,7 @@ def main():
     screens.remove(primary_screen)
     secondary_screen=screens[0]
     patient_window = ScenarioScreen(secondary_screen)
-    experiment_dashboard = MainWindow(patient_window)
+    experiment_dashboard = MainWindow(patient_window, args.filename)
     experiment_dashboard.show()
     sys.exit(app.exec_())
 
