@@ -38,6 +38,7 @@ class MainWindow(QtWidgets.QWidget):
 
     def _start(self):
         '''start all processes.'''
+        print('Starting...')
         self.running = True
         self.recorder.start()
         self.tobii_worker.start()

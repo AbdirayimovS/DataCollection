@@ -59,7 +59,8 @@ class TobiiEyeTracker(QtCore.QThread):
             if QtCore.QThread.currentThread().isInterruptionRequested():
                 break
 
-
+        
+        self.save_data()
         self.eye_tracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, self.on_gaze_data)
         print("Tobii successfully unsubscribed!")
 
@@ -68,9 +69,6 @@ class TobiiEyeTracker(QtCore.QThread):
         gaze['timestamp'] = time.monotonic()
 
         self.data_buffer.append(gaze)
-        if len(self.data_buffer) >= 100:
-            self.save_data()
-            self.data_buffer = []
 
     def save_data(self):
         """Save accumulated gaze data to a file."""
@@ -78,7 +76,7 @@ class TobiiEyeTracker(QtCore.QThread):
             import pandas as pd
 
             df = pd.DataFrame(self.data_buffer)
-            mode = "a" if os.path.exists(self.filename) else "w"
-            df.to_csv(self.filename, mode=mode, header=mode == "w", index=False)
+            mode = "w"
+            df.to_csv(self.filename, mode=mode, header=True, index=False)
         except Exception as e:
-            self.error_occurred.emit(f"Error saving data: {e}")
+            print(f"Error saving data: {e}")
